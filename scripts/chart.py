@@ -54,43 +54,20 @@ if len(top5) > 0:
 else:
     top5_markdown = "*No successful attacks marked in manual review*"
 
-# Final Report
-report = f"""
-# FINAL JAILBREAK BENCHMARK REPORT
 
-## Models Tested
-- **Phi-3-mini**
-- **Llama-2-7B-Chat** (4-bit)
+# Pie chart - Attack type distribution
+plt.figure(figsize=(10, 8))
+attack_type_counts = reviewed['type'].value_counts()
+colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F']
+plt.pie(attack_type_counts.values, labels=attack_type_counts.index, autopct='%1.1f%%',
+        colors=colors[:len(attack_type_counts)], startangle=90, textprops={'fontsize': 11, 'weight': 'bold'})
+plt.title("Distribution of Attack Types Used", fontsize=14, weight='bold', pad=20)
+plt.axis('equal')
+plt.tight_layout()
+plt.savefig(output_dir / "attack_types_pie_chart.png", dpi=200, bbox_inches='tight')
+plt.show()
 
-## Total Attacks: 112
-- 50 one-shot
-- 25 role-playing
-- 37 multi-turn (role + override + leetspeak)
 
-## Validation
-**Manual review** of {len(reviewed)} auto-flagged outputs
-
-## Results
-**Attack Success Rate (ASR)**:  
-{asr.to_dict()}
-
-**Output Success Rate (OSR)**:  
-{osr.to_dict()}
-
-**Manual Review Summary**:  
-- Total flagged outputs: {len(reviewed)}
-- Marked as YES (successful): {len(reviewed[reviewed['manual'] == 'YES'])}
-- Marked as NO (unsuccessful): {len(reviewed[reviewed['manual'] == 'NO'])}
-
-## Top 5 Most Effective Attacks
-{top5_markdown}
-
-![Manual Review Results Chart](asr_final.png)
-"""
-
-with open(output_dir / "FINAL_REPORT.md", "w") as f:
-    f.write(report)
-
-print(f"\nFINAL REPORT: {output_dir / 'FINAL_REPORT.md'}")
 print(f"CHART: {output_dir / 'asr_final.png'}")
-print(f"REVIEW: {output_dir / 'MANUAL_REVIEW.csv'}")
+print(f"ATTACK TYPES PIE CHART: {output_dir / 'attack_types_pie_chart.png'}")
+print(f"REVIEW: {output_dir / 'MANUAL_REVIEW.csv'}")    

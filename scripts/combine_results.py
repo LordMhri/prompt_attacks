@@ -23,7 +23,7 @@ print(f"Saved to {output_dir / 'combined_results.csv'}")
 
 
 # Add manual review column for all outputs
-df['manual'] = "YES"
+df['manual'] = "NO"
 
 # Save all outputs for manual review
 df[['id', 'type', 'prompt', 'output', 'model', 'manual']].to_csv(
