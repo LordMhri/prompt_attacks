@@ -1,19 +1,12 @@
 from pathlib import Path
 import json
-import base64
+
 def get_lines(path: str) -> list[str]:
     file_path = Path(__file__).parent / path
     with open(file_path, 'r') as file:
         lines = [line.strip() for line in file]
     return lines
 
-lines = (get_lines("../attacks/override_attack.txt"))
-
-base_64_lines = get_lines("../attacks/base64_original_strings.txt")
-
-base64_strings = [base64.b64encode(line.encode('utf-8')).decode('ascii') for line in base_64_lines]
-
-# print(base64_strings)
 def apply_txt(lines:list[str],json_path:Path,type:str) -> None:
     json_text  = json_path.read_text()
     json_data = json.loads(json_text)
@@ -38,11 +31,28 @@ def count_types(json_path:Path,type:str) -> int:
     
     return type_count
 
-base_script_dir = Path(__file__).parent.parent
-json_path = Path(base_script_dir / "attacks" / "attacks.json")
-# print(count_types(json_path,"base_64"))
-# print(count_types(json_path,"leet_speak"))
-# print(count_types(json_path,"Role-Based"))
-# print(count_types(json_path,"MultiTurn"))
+def load_prompt(json_path:Path) -> list[str]:
+    json_text  = json_path.read_text()
+    json_data = json.loads(json_text)
+    final_data = []
+    for data in json_data:
+        if isinstance(data, dict) and data["type"] != "MultiTurn" and data['text'] != "" :
+            final_data.append(data["text"])
 
-apply_txt(base64_strings, json_path,"base_64")
+    return final_data
+    
+
+
+
+base_script_dir = Path(__file__).parent.parent
+json_path = base_script_dir / "attacks" / "attacks.json"
+
+
+# role_playing_lines = get_lines("../attacks/role_play_attacks.txt")
+# print(role_playing_lines)
+# apply_txt([[lines] for lines in role_playing_lines],json_path,"Role-Based")
+# json_data = load_prompt(Path(json_path))
+# print(json_data)
+# print(count_types(Path(json_path),"leet_speak"))
+print(count_types(Path(json_path),"MultiTurn"))
+# print(count_types(Path(json_path),"Role-Based"))
